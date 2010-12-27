@@ -4,10 +4,21 @@ using System.Linq;
 
 namespace mstum.utils
 {
+    /// <summary>
+    /// A Base36 De- and Encoder
+    /// </summary>
+    /// <remarks>
+    /// http://www.stum.de/2008/10/20/base36-encoderdecoder-in-c/
+    /// </remarks>
     public static class Base36
     {
         private const string CharList = "0123456789abcdefghijklmnopqrstuvwxyz";
 
+        /// <summary>
+        /// Encode the given number into a Base36 string
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         public static String Encode(long input)
         {
             if (input < 0) throw new ArgumentOutOfRangeException("input", input, "input cannot be negative");
@@ -22,6 +33,11 @@ namespace mstum.utils
             return new string(result.ToArray());
         }
 
+        /// <summary>
+        /// Decode the Base36 Encoded string into a number
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         public static Int64 Decode(string input)
         {
             var reversed = input.ToLower().Reverse();

@@ -68,12 +68,12 @@ namespace mstum.utils
             var result = new Dictionary<string, List<string>>();
             string currentArgument = string.Empty;
 
-            for (int i = 0; i < args.Length; i++)
+            foreach (string t in args)
             {
                 // Is this an argument?
-                if ((args[i].StartsWith("-", StringComparison.OrdinalIgnoreCase) || args[i].StartsWith("/", StringComparison.OrdinalIgnoreCase)) && args[i].Length > 1)
+                if ((t.StartsWith("-", StringComparison.OrdinalIgnoreCase) || t.StartsWith("/", StringComparison.OrdinalIgnoreCase)) && t.Length > 1)
                 {
-                    currentArgument = args[i].Remove(0, 1);
+                    currentArgument = t.Remove(0, 1);
                     if (ignoreArgumentCase)
                     {
                         currentArgument = currentArgument.ToLowerInvariant();
@@ -94,7 +94,7 @@ namespace mstum.utils
                     {
                         paramValues = new List<string>();
                     }
-                    paramValues.Add(args[i]);
+                    paramValues.Add(t);
                     result[currentArgument] = paramValues;
                     if (!allowMultipleParameters)
                     {

@@ -81,6 +81,9 @@ namespace mstum.utils
         /// <summary>
         /// Set an entire sections values
         /// </summary>
+        /// <remarks>
+        /// This completely replaces the section, so entries not in the new sectionValues are removed
+        /// </remarks>
         /// <param name="sectionName"></param>
         /// <param name="sectionValues"></param>
         public void SetSection(string sectionName, IDictionary<string, string> sectionValues)
@@ -88,7 +91,6 @@ namespace mstum.utils
             if (sectionValues == null) return;
             _iniFileContent[sectionName] = new Dictionary<string, string>(sectionValues);
         }
-
 
         /// <summary>
         /// Load an .INI File
@@ -99,41 +101,7 @@ namespace mstum.utils
         {
             if (File.Exists(filename))
             {
-                try
-                {
-                    var content = File.ReadAllLines(filename);
-                    _iniFileContent = new Dictionary<string, Dictionary<string, string>>();
-                    string currentSectionName = string.Empty;
-                    foreach (var line in content)
-                    {
-                        Match m = _sectionRegex.Match(line);
-                        if (m.Success)
-                        {
-                            currentSectionName = m.Groups["SectionName"].Value;
-                        }
-                        else
-                        {
-                            m = _keyValueRegex.Match(line);
-                            if (m.Success)
-                            {
-                                string key = m.Groups["Key"].Value;
-                                string value = m.Groups["Value"].Value;
-
-                                var kvpList = _iniFileContent.ContainsKey(currentSectionName)
-                                                  ? _iniFileContent[currentSectionName]
-                                                  : new Dictionary<string, string>();
-                                kvpList[key] = value;
-                                _iniFileContent[currentSectionName] = kvpList;
-                            }
-                        }
-                    }
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
-
+                return LoadContents(File.ReadAllText(filename));
             }
             return false;
         }
@@ -144,6 +112,67 @@ namespace mstum.utils
         /// <param name="filename"></param>
         /// <returns></returns>
         public bool Save(string filename)
+        {
+            var content = SaveContents();
+            try
+            {
+                File.WriteAllText(filename, content);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Load an .INI File from a string
+        /// </summary>
+        /// <param name="fileContents"></param>
+        /// <returns></returns>
+        public bool LoadContents(string fileContents)
+        {
+            try
+            {
+                var content = fileContents.Replace("\r", string.Empty).Split('\n');
+                _iniFileContent = new Dictionary<string, Dictionary<string, string>>();
+                string currentSectionName = string.Empty;
+                foreach (var line in content)
+                {
+                    Match m = _sectionRegex.Match(line);
+                    if (m.Success)
+                    {
+                        currentSectionName = m.Groups["SectionName"].Value;
+                    }
+                    else
+                    {
+                        m = _keyValueRegex.Match(line);
+                        if (m.Success)
+                        {
+                            string key = m.Groups["Key"].Value;
+                            string value = m.Groups["Value"].Value;
+
+                            var kvpList = _iniFileContent.ContainsKey(currentSectionName)
+                                              ? _iniFileContent[currentSectionName]
+                                              : new Dictionary<string, string>();
+                            kvpList[key] = value;
+                            _iniFileContent[currentSectionName] = kvpList;
+                        }
+                    }
+                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Get the .ini File Contents as a string
+        /// </summary>
+        /// <returns></returns>
+        public string SaveContents()
         {
             var sb = new StringBuilder();
             if (_iniFileContent != null)
@@ -157,15 +186,7 @@ namespace mstum.utils
                     }
                 }
             }
-            try
-            {
-                File.WriteAllText(filename, sb.ToString());
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            return sb.ToString();
         }
     }
 }
