@@ -34,6 +34,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
@@ -41,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base36.cs" />
+    <Compile Include="Base36Big.cs" />
     <Compile Include="CommandLineParser.cs" />
     <Compile Include="EvenOddCycler.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />

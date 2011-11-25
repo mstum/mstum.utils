@@ -11,3 +11,4 @@ pkg/
 _ReSharper.*/
 *.user
 ~$*
+TestResults/
