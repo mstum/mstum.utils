@@ -12,3 +12,5 @@ _ReSharper.*/
 *.user
 ~$*
 TestResults/
+*.testsettings
+*.vsmdi
