@@ -236,6 +236,26 @@ namespace mstum.utils.tests
         }
 
         [TestMethod]
+        public void Enumerate_Reset_ProperlyResets()
+        {
+            var buffer = new CircularBuffer<int>(3);
+            buffer.Add(1);
+            buffer.Add(2);
+            buffer.Add(3);
+
+            var en = buffer.GetEnumerator();
+            en.MoveNext();
+            Assert.AreEqual(1, en.Current);
+            en.MoveNext();
+            Assert.AreEqual(2, en.Current);
+            en.Reset();
+            en.MoveNext();
+            Assert.AreEqual(1, en.Current);
+            en.MoveNext();
+            Assert.AreEqual(2, en.Current);
+        }
+
+        [TestMethod]
         [Ignore] // This test runs for ages, only run if needed
         public void Add_HugeNumber_WorksCorrectly()
         {

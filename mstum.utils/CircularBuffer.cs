@@ -147,7 +147,7 @@ namespace mstum.utils
             private CircularBuffer<T> _buffer;
             private T _current;
             private int? _index;
-            private int _maxEnumerations;
+            private int _numSteps;
 
             public CircularBufferEnumerator(CircularBuffer<T> buffer)
             {
@@ -166,7 +166,7 @@ namespace mstum.utils
             {
                 get
                 {
-                    if (_index == null || _index == (_buffer._size + 1))
+                    if (_numSteps == 0 || _numSteps > _buffer._size)
                     {
                         throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                     }
@@ -180,6 +180,7 @@ namespace mstum.utils
                 {
                     throw new InvalidOperationException("Collection was modified; enumeration operation may not execute.");
                 }
+                _numSteps = 0;
                 _index = null;
                 _current = default(T);
             }
@@ -190,8 +191,8 @@ namespace mstum.utils
                 {
                     throw new InvalidOperationException("Collection was modified; enumeration operation may not execute.");
                 }
-                _maxEnumerations++;
-                if (_maxEnumerations > _buffer._size)
+                _numSteps++;
+                if (_numSteps > _buffer._size)
                 {
                     return false;
                 }
