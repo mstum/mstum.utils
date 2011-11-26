@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Base36.cs" />
     <Compile Include="Base36Big.cs" />
+    <Compile Include="CircularBuffer.cs" />
     <Compile Include="CommandLineParser.cs" />
     <Compile Include="EvenOddCycler.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />

@@ -3,6 +3,13 @@
 
 Just some Misc. Utilities that I wrote over time.
 
+Circular Buffer
+---------------
+Also known as "Ring Buffer". Has a set capacity and as you add items, new items overwrite the oldest one.
+In other words: This holds the last {capacity} items.
+
+http://www.stum.de/2011/11/26/circularbuffer-added-to-my-net-utils-library/
+
 Base36 Encoder/Decoder
 ----------------------
 Convert an Int64 or BigInteger to a Base36 string and vice versa.

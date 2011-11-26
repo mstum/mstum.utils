@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Base36BigIntegerTests.cs" />
     <Compile Include="Base36Tests.cs" />
+    <Compile Include="CircularBufferTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
