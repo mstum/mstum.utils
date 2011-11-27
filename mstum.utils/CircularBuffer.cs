@@ -49,21 +49,27 @@ namespace mstum.utils
         private int _size;
         private readonly T[] _store;
         private readonly int _capacity;
-        private readonly object _lockObj;
         private int _version;
         private int _index;
 
         public CircularBuffer(int capacity)
         {
-            _lockObj = new Object();
             _capacity = capacity;
             _store = new T[capacity];
         }
 
         private int CalculateIndex(int currentIndex, int steps)
         {
-            // ToDo: Handle Negative steps
-            return (currentIndex + steps) % _capacity;
+            if (steps < 0)
+            {
+                var r = _capacity - (currentIndex - steps) % _capacity;
+                if (r == _capacity) r = 0;
+                return r;
+            }
+            else
+            {
+                return (currentIndex + steps) % _capacity;
+            }
         }
 
         public void Add(T item)
@@ -146,7 +152,6 @@ namespace mstum.utils
             private int _version;
             private CircularBuffer<T> _buffer;
             private T _current;
-            private int? _index;
             private int _numSteps;
 
             public CircularBufferEnumerator(CircularBuffer<T> buffer)
@@ -154,7 +159,6 @@ namespace mstum.utils
                 _buffer = buffer;
                 _version = buffer._version;
                 _current = default(T);
-                _index = null;
             }
 
             public T Current
@@ -181,7 +185,6 @@ namespace mstum.utils
                     throw new InvalidOperationException("Collection was modified; enumeration operation may not execute.");
                 }
                 _numSteps = 0;
-                _index = null;
                 _current = default(T);
             }
 
@@ -197,16 +200,11 @@ namespace mstum.utils
                     return false;
                 }
 
-                if (!_index.HasValue) _index = _buffer._start;
-
-                _current = _buffer._store[_index.Value];
-
-                _index = _buffer.CalculateIndex(_index.Value,1);
+                var bufferIndex = _buffer.CalculateIndex(_buffer._start,_numSteps-1);
+                _current = _buffer._store[bufferIndex];
 
                 return true;
             }
-
-
 
             public void Dispose()
             {
