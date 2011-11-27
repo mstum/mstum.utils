@@ -195,7 +195,7 @@ namespace mstum.utils
         /// <returns></returns>
         public IEnumerator<T> GetEnumerator()
         {
-            return new CircularBufferEnumerator<T>(this);
+            return new CircularBufferEnumerator(this);
         }
 
         /// <summary>
@@ -210,7 +210,7 @@ namespace mstum.utils
             return GetEnumerator();
         }
 
-        private class CircularBufferEnumerator<T> : IEnumerator<T>
+        private class CircularBufferEnumerator : IEnumerator<T>
         {
             /// <summary>
             /// The version of the _buffer at the time the enumerator was created
