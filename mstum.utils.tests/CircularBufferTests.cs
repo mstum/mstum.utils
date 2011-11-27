@@ -192,6 +192,39 @@ namespace mstum.utils.tests
         }
 
         [TestMethod]
+        public void ContainsRefType_NullExists_ReturnsTrue()
+        {
+            var buffer = new CircularBuffer<TestRefType>(3);
+            var id1 = Guid.NewGuid();
+            var id2 = Guid.NewGuid();
+            var id3 = Guid.NewGuid();
+
+            buffer.Add(new TestRefType(id1));
+            buffer.Add(new TestRefType(id2));
+            buffer.Add(null);
+            buffer.Add(new TestRefType(id3));
+
+
+            Assert.IsTrue(buffer.Contains(null));
+        }
+
+        [TestMethod]
+        public void ContainsRefType_NullDoesNotExist_ReturnsTrue()
+        {
+            var buffer = new CircularBuffer<TestRefType>(3);
+            var id1 = Guid.NewGuid();
+            var id2 = Guid.NewGuid();
+            var id3 = Guid.NewGuid();
+
+            buffer.Add(new TestRefType(id1));
+            buffer.Add(new TestRefType(id2));
+            buffer.Add(new TestRefType(id3));
+
+
+            Assert.IsFalse(buffer.Contains(null));
+        }
+
+        [TestMethod]
         public void Enumerate_ForEach_ProperlyEnumerates()
         {
             var buffer = new CircularBuffer<int>(3);

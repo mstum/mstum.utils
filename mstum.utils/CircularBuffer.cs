@@ -152,7 +152,7 @@ namespace mstum.utils
                 EqualityComparer<T> comparer = EqualityComparer<T>.Default;
                 while (e.MoveNext())
                 {
-                    if(comparer.Equals(e.Current, item) { return true; }
+                    if(comparer.Equals(e.Current, item)) { return true; }
                 }
                 return false;
             }
