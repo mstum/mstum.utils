@@ -140,15 +140,22 @@ namespace mstum.utils
         {
             using (var e = GetEnumerator())
             {
+                if (item == null)
+                {
+                    while (e.MoveNext())
+                    {
+                        if (e.Current == null) { return true; }
+                    }
+                    return false;
+                }
+
+                EqualityComparer<T> comparer = EqualityComparer<T>.Default;
                 while (e.MoveNext())
                 {
-                    if (Equals(e.Current, item))
-                    {
-                        return true;
-                    }
+                    if(comparer.Equals(e.Current, item) { return true; }
                 }
+                return false;
             }
-            return false;
         }
 
         public void CopyTo(T[] array, int arrayIndex)
