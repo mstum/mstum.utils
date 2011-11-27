@@ -45,7 +45,6 @@
     <Compile Include="Base36Big.cs" />
     <Compile Include="CircularBuffer.cs" />
     <Compile Include="CommandLineParser.cs" />
-    <Compile Include="ConcurrentCircularBuffer.cs" />
     <Compile Include="EvenOddCycler.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="IniFile.cs" />

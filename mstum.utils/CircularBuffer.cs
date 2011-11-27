@@ -43,21 +43,48 @@ namespace mstum.utils
     {
         // Todo: Optimize Contains and CopyTo for Speed
         // Todo: Implement IList<T>
-        // Todo: Get rid of _index since _capacity, _start and _size are enough to calculate the Index
 
+        /// <summary>
+        /// The Index into the _store where the first element if the buffer resides.
+        /// </summary>
         private int _start;
-        private int _size;
-        private readonly T[] _store;
-        private readonly int _capacity;
-        private int _version;
-        private int _index;
 
+        /// <summary>
+        /// How many items we currently have (important because _store is bigger than the circular buffer initially)
+        /// </summary>
+        private int _size;
+
+        /// <summary>
+        /// The backing store
+        /// </summary>
+        private readonly T[] _store;
+
+        /// <summary>
+        /// The size of _store
+        /// </summary>
+        private readonly int _capacity;
+
+        /// <summary>
+        /// Incremented with each modification to make sure Enumerators blow up properly
+        /// </summary>
+        private int _version;
+
+        /// <summary>
+        /// Create a new Circular Buffer with the given capacity
+        /// </summary>
+        /// <param name="capacity"></param>
         public CircularBuffer(int capacity)
         {
             _capacity = capacity;
             _store = new T[capacity];
         }
 
+        /// <summary>
+        /// Since the buffer is infinite and wraps around, use this to calculate an index given a start value and steps
+        /// </summary>
+        /// <param name="currentIndex"></param>
+        /// <param name="steps"></param>
+        /// <returns></returns>
         private int CalculateIndex(int currentIndex, int steps)
         {
             if (steps < 0)
@@ -72,10 +99,14 @@ namespace mstum.utils
             }
         }
 
+        /// <summary>
+        /// Add a new item to the buffer. If the buffer is at its capacity, the oldest item will be discarded
+        /// </summary>
+        /// <param name="item"></param>
         public void Add(T item)
         {
-            _store[_index] = item;
-            _index = CalculateIndex(_index,1);
+            var index = CalculateIndex(_start, _size);
+            _store[index] = item;
             _size++;
             if (_size > _capacity)
             {
@@ -85,19 +116,26 @@ namespace mstum.utils
             this._version++;
         }
 
+        /// <summary>
+        /// Clear the Buffer, removing all elements
+        /// </summary>
         public void Clear()
         {
             if (this._size > 0)
             {
-                Array.Clear(this._store, 0, this._size);
+                Array.Clear(this._store, 0, this._capacity);
                 this._size = 0;
                 this._start = 0;
-                this._index = 0;
             }
             this._version++;
 
         }
 
+        /// <summary>
+        /// Does the buffer contain the given item?
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public bool Contains(T item)
         {
             var tempArray = new T[_size];
@@ -121,27 +159,52 @@ namespace mstum.utils
             Array.Copy(tempArray, 0, array, arrayIndex, _size);
         }
 
+        /// <summary>
+        /// How many items does this buffer contain?
+        /// </summary>
         public int Count
         {
             get { return _size; }
         }
 
+        /// <summary>
+        /// Is this buffer read only?
+        /// </summary>
         public bool IsReadOnly
         {
             [TargetedPatchingOptOut("Performance critical to inline across NGen image boundaries")]
             get { return false; }
         }
 
+        /// <summary>
+        /// This operation is not implemented in the buffer.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public bool Remove(T item)
         {
             throw new InvalidOperationException("Removing of Elements is not possible.");
         }
 
+        /// <summary>
+        /// Get an Enumerator to enumerator over the buffer.
+        /// </summary>
+        /// <remarks>
+        /// If the buffer is modified while enumerating, the enumerator throws an exception
+        /// </remarks>
+        /// <returns></returns>
         public IEnumerator<T> GetEnumerator()
         {
             return new CircularBufferEnumerator<T>(this);
         }
 
+        /// <summary>
+        /// Get an Enumerator to enumerator over the buffer.
+        /// </summary>
+        /// <remarks>
+        /// If the buffer is modified while enumerating, the enumerator throws an exception
+        /// </remarks>
+        /// <returns></returns>
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
@@ -149,11 +212,30 @@ namespace mstum.utils
 
         private class CircularBufferEnumerator<T> : IEnumerator<T>
         {
-            private int _version;
+            /// <summary>
+            /// The version of the _buffer at the time the enumerator was created
+            /// </summary>
+            private readonly int _version;
+
+            /// <summary>
+            /// The CircularBuffer we are enumerating over
+            /// </summary>
             private CircularBuffer<T> _buffer;
+
+            /// <summary>
+            /// The Current item
+            /// </summary>
             private T _current;
+
+            /// <summary>
+            /// How often did we MoveNext?
+            /// </summary>
             private int _numSteps;
 
+            /// <summary>
+            /// Create an Enumerator for the given buffer
+            /// </summary>
+            /// <param name="buffer"></param>
             public CircularBufferEnumerator(CircularBuffer<T> buffer)
             {
                 _buffer = buffer;
@@ -161,11 +243,17 @@ namespace mstum.utils
                 _current = default(T);
             }
 
+            /// <summary>
+            /// The Current Item
+            /// </summary>
             public T Current
             {
                 get { return _current; }
             }
 
+            /// <summary>
+            /// The current Item
+            /// </summary>
             object System.Collections.IEnumerator.Current
             {
                 get
@@ -178,6 +266,9 @@ namespace mstum.utils
                 }
             }
 
+            /// <summary>
+            /// Reset the enumerator to restart enumeration
+            /// </summary>
             public void Reset()
             {
                 if (_buffer._version != _version)
@@ -188,6 +279,10 @@ namespace mstum.utils
                 _current = default(T);
             }
 
+            /// <summary>
+            /// Move the Enumerator forward
+            /// </summary>
+            /// <returns></returns>
             public bool MoveNext()
             {
                 if (_buffer._version != _version)
@@ -197,6 +292,7 @@ namespace mstum.utils
                 _numSteps++;
                 if (_numSteps > _buffer._size)
                 {
+                    _current = default(T);
                     return false;
                 }
 
