@@ -160,18 +160,26 @@ namespace mstum.utils
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            var tempArray = new T[_size];
-            var i = 0;
-            using (var en = GetEnumerator())
+            if (array == null)
             {
-                while (en.MoveNext())
-                {
-                    tempArray[i] = en.Current;
-                    i++;
-                }
-            }            
+                throw new ArgumentNullException("array");
+            }
 
-            Array.Copy(tempArray, 0, array, arrayIndex, _size);
+            if (_size > (array.Length - arrayIndex))
+            {
+                throw new ArgumentException("Destination array was not long enough. Check destIndex and length, and the array's lower bounds.", "array");
+            }
+
+            if (_start == 0)
+            {
+                Array.Copy(_store, 0, array, arrayIndex, _size);
+            }
+            else
+            {
+                // Need to copy in two chunks. We know that our _store is "full" since _start would be 0 otherwise.
+                Array.Copy(_store, _start, array, arrayIndex, _capacity - _start);
+                Array.Copy(_store, 0, array, arrayIndex + (_capacity - _start), _start);
+            }
         }
 
         /// <summary>

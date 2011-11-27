@@ -30,7 +30,6 @@ namespace mstum.utils.tests
             buffer.Add(1);
             buffer.Add(2);
 
-
             Assert.AreEqual(1, buffer.Skip(0).First());
             Assert.AreEqual(2, buffer.Skip(1).First());
         }
@@ -286,6 +285,60 @@ namespace mstum.utils.tests
             Assert.AreEqual(1, en.Current);
             en.MoveNext();
             Assert.AreEqual(2, en.Current);
+        }
+
+        [TestMethod]
+        public void CopyTo_WithinCapacity_OnlyCopiesAddedItems()
+        {
+            var buffer = new CircularBuffer<int>(3);
+            buffer.Add(1);
+            buffer.Add(2);
+
+            var result = new int[2];
+
+            buffer.CopyTo(result, 0);
+
+            Assert.AreEqual(1, result[0]);
+            Assert.AreEqual(2, result[1]);
+        }
+
+        [TestMethod]
+        public void CopyTo_OverCapacity_RetainsOrder()
+        {
+            var buffer = new CircularBuffer<int>(3);
+            buffer.Add(1);
+            buffer.Add(2);
+            buffer.Add(3);
+            buffer.Add(4);
+
+            var result = new int[3];
+
+            buffer.CopyTo(result, 0);
+
+            Assert.AreEqual(2, result[0]);
+            Assert.AreEqual(3, result[1]);
+            Assert.AreEqual(4, result[2]);
+        }
+
+
+        [TestMethod]
+        public void CopyToWithIndex_OverCapacity_RetainsOrder()
+        {
+            var buffer = new CircularBuffer<int>(3);
+            buffer.Add(1);
+            buffer.Add(2);
+            buffer.Add(3);
+            buffer.Add(4);
+
+            var result = new int[5];
+
+            buffer.CopyTo(result, 2);
+
+            Assert.AreEqual(0, result[0]);
+            Assert.AreEqual(0, result[1]);
+            Assert.AreEqual(2, result[2]);
+            Assert.AreEqual(3, result[3]);
+            Assert.AreEqual(4, result[4]);
         }
 
         [TestMethod]
