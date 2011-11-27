@@ -138,9 +138,17 @@ namespace mstum.utils
         /// <returns></returns>
         public bool Contains(T item)
         {
-            var tempArray = new T[_size];
-            CopyTo(tempArray, 0);
-            return tempArray.Contains(item);
+            using (var e = GetEnumerator())
+            {
+                while (e.MoveNext())
+                {
+                    if (Equals(e.Current, item))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         public void CopyTo(T[] array, int arrayIndex)
