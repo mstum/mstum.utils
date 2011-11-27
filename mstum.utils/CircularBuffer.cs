@@ -41,9 +41,6 @@ namespace mstum.utils
     /// <typeparam name="T"></typeparam>
     public class CircularBuffer<T> : ICollection<T>
     {
-        // Todo: Optimize Contains and CopyTo for Speed
-        // Todo: Implement IList<T>
-
         /// <summary>
         /// The Index into the _store where the first element if the buffer resides.
         /// </summary>
@@ -138,24 +135,25 @@ namespace mstum.utils
         /// <returns></returns>
         public bool Contains(T item)
         {
-            using (var e = GetEnumerator())
-            {
-                if (item == null)
-                {
-                    while (e.MoveNext())
-                    {
-                        if (e.Current == null) { return true; }
-                    }
-                    return false;
-                }
+            // It it always safe to start iterating from 0:
+            // 1. If the _store isn't full yet, _start will be 0
+            // 2. If the _store is full, it doesn't matter if we check elements out of order since we only care about contains
 
-                EqualityComparer<T> comparer = EqualityComparer<T>.Default;
-                while (e.MoveNext())
+            if (item == null)
+            {
+                for (int i = 0; i < _size; i++)
                 {
-                    if(comparer.Equals(e.Current, item)) { return true; }
+                    if (_store[i] == null) return true;
                 }
                 return false;
             }
+
+            EqualityComparer<T> comparer = EqualityComparer<T>.Default;
+            for (int i = 0; i < _size; i++)
+            {
+                if (comparer.Equals(_store[i], item)) return true;
+            }
+            return false;
         }
 
         public void CopyTo(T[] array, int arrayIndex)
