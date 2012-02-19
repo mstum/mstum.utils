@@ -46,6 +46,7 @@
     <Compile Include="CircularBuffer.cs" />
     <Compile Include="CommandLineParser.cs" />
     <Compile Include="EvenOddCycler.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="IniFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
