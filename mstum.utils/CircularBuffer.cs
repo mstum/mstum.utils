@@ -2,6 +2,9 @@
 /* The MIT License (MIT)
  * Copyright (c) 2011 Michael Stum, http://www.Stum.de <opensource@stum.de>
  * 
+ * Contributions by
+ *   Aaron Navarro - https://github.com/anavarro9731
+ * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -54,7 +57,7 @@ namespace mstum.utils
         /// <summary>
         /// The backing store
         /// </summary>
-        private readonly T[] _store;
+        private T[] _store;
 
         /// <summary>
         /// The size of _store
@@ -198,13 +201,40 @@ namespace mstum.utils
         }
 
         /// <summary>
-        /// This operation is not implemented in the buffer.
+        /// Removes an item from the collection. If the item removed occurs at or before the current position the current position is moved back by one.
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
         public bool Remove(T item)
         {
-            throw new InvalidOperationException("Removing of Elements is not possible.");
+            if (Contains(item))
+            {
+                T[] _newStore = new T[_capacity];
+
+                int? skippedAt = null;
+
+                EqualityComparer<T> comparer = EqualityComparer<T>.Default;
+                for (int i = 0; i < _size; i++)
+                {
+                    _newStore[(skippedAt != null ? i - 1 : i)] = _store[i];
+
+                    if (comparer.Equals(_store[i], item))
+                    {
+                        skippedAt = i;
+                        continue;
+                    }
+                }
+                _size--;
+                if (_start >= skippedAt && _start > 0)
+                {
+                    _start--;
+                }
+                _store = _newStore;
+                _version++;
+
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
